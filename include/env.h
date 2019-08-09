@@ -27,25 +27,25 @@ struct Env {
 	Pde  *env_pgdir;                // Kernel virtual address of page dir
 	u_int env_cr3;
 	LIST_ENTRY(Env) env_sched_link;
-        u_int env_pri;
+    u_int env_pri;
 	// Lab 4 IPC
 	u_int env_ipc_value;            // data value sent to us 
 	u_int env_ipc_from;             // envid of the sender  
 	u_int env_ipc_recving;          // env is blocked receiving
-	u_int env_ipc_dstva;		// va at which to map received page
-	u_int env_ipc_perm;		// perm of page mapping received
+	u_int env_ipc_dstva;			// va at which to map received page
+	u_int env_ipc_perm;				// perm of page mapping received
 
 	// Lab 4 fault handling
 	u_int env_pgfault_handler;      // page fault state
 	u_int env_xstacktop;            // top of exception stack
 
 	// Lab 6 scheduler counts
-	u_int env_runs;			// number of times been env_run'ed
+	u_int env_runs;					// number of times been env_run'ed
 	u_int env_nop;                  // align to avoid mul instruction
 };
 
 LIST_HEAD(Env_list, Env);
-extern struct Env *envs;		// All environments
+extern struct Env *envs;			// All environments
 extern struct Env *curenv;	        // the current env
 extern struct Env_list env_sched_list[2]; // runnable env list
 

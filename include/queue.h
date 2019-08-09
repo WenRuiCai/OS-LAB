@@ -52,7 +52,6 @@
         }
 
 /*
-                
  * Set a list head variable to LIST_HEAD_INITIALIZER(head)
  * to reset it to the empty list.
  */
@@ -111,14 +110,14 @@
  */
 
 
-#define LIST_INSERT_AFTER(listelm, elm, field) do {                                 \
-            (elm)->field.le_next = (listelm)->field.le_next;                        \
-            if ((elm)->field.le_next != NULL) {                                     \
-                ((elm)->field.le_next)->field.le_prev = &((elm)->field.le_next);    \
-            }                                                                       \
-            (listelm)->field.le_next = elm;                                         \
-            (elm)->field.le_prev = &((listelm)->field.le_next);                     \
-        } while (0)
+#define LIST_INSERT_AFTER(listelm, elm, field) do {												\
+				LIST_NEXT((elm), field) = LIST_NEXT((listelm), field);							\
+				if (LIST_NEXT((listelm), field) != NULL) {										\
+						LIST_NEXT((listelm), field)->field.le_prev = &LIST_NEXT((elm), field);		\
+				}																				\
+				LIST_NEXT((listelm), field) = (elm);											\
+				(elm)->field.le_prev = &LIST_NEXT((listelm), field);							\
+		} while (0)
         // Note: assign a to b <==> a = b
         //Step 1, assign elm.next to listelem.next.
         //Step 2: Judge whether listelm.next is NULL, if not, then assign listelm.pre to a proper value.
@@ -154,19 +153,19 @@
  * The "field" name is the link element as above. You can refer to LIST_INSERT_HEAD.
  * Note: this function has big differences with LIST_INSERT_HEAD !
  */
-#define LIST_INSERT_TAIL(head, elm, field) do {                         \
-            typeof(LIST_FIRST(head)) t_page = LIST_FIRST(head); \
-            if (t_page == NULL) {   \
-                LIST_FIRST(head) = elm;  \
-                (elm)->field.le_prev = &LIST_FIRST((head));   \
-                (elm)->field.le_next = NULL;  \
-                break;  \
-            }   \
-            while (LIST_NEXT((t_page), field) != NULL) t_page = LIST_NEXT((t_page), field);  \
-            LIST_INSERT_AFTER(t_page, elm, field);           \
-        } while (0)                                             
+#define LIST_INSERT_TAIL(head, elm, field) do {								\
+				if (LIST_FIRST(head) == NULL)													\
+					LIST_INSERT_HEAD(head, elm, field);											\
+				else {																			\
+					LIST_FOREACH(LIST_NEXT(elm, field), head, field)								\
+						if (LIST_NEXT(elm, field)->field.le_next == NULL)						\
+							break;												\
+					LIST_NEXT(elm, field)->field.le_next = (elm);								\
+					(elm)->field.le_prev = &LIST_NEXT(LIST_NEXT(elm, field), field);			\
+					LIST_NEXT(elm, field) = NULL;												\
+				}																				\
+		} while (0)
 /* finish your code here. */
-
 
 
 #define LIST_NEXT(elm, field)   ((elm)->field.le_next)
@@ -187,7 +186,7 @@
  */
 #define TAILQ_HEAD(name, type)                                          \
         struct name {                                                           \
-                struct type *tqh_first; /* first element */                     \
+                STstruct type *tqh_first; /* first element */                     \
                 struct type **tqh_last; /* addr of last next element */         \
         }
 

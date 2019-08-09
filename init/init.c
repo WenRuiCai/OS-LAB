@@ -2,7 +2,11 @@
 #include <pmap.h>
 #include <env.h>
 #include <printf.h>
+#include <kclock.h>
 #include <trap.h>
+
+extern char aoutcode[];
+extern char boutcode[];
 
 void mips_init()
 {
@@ -12,9 +16,20 @@ void mips_init()
         mips_detect_memory();
         mips_vm_init();
         page_init();
+        //page_check();
 
-        //physical_memory_manage_check();
-    page_check();
+        // Lab 3 user environment initialization functions
+        env_init();
+        //ENV_CREATE(user_fstest);
+        //ENV_CREATE(fs_serv);
+        // initialize exception vector.
+        trap_init();
+        // initialize PIT.
+        kclock_init();
+        ENV_CREATE(user_fstest);
+        ENV_CREATE(fs_serv);
+        // Create process using macro 'ENC_CREATE'
+        // For more details about 'ENV_CREATE', see include/env.h
 
         panic("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 
