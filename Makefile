@@ -1,32 +1,30 @@
 # Main makefile
 #
 # Copyright (C) 2007 Beihang University
-# Written by Zhu Like ( zlike@cse.buaa.edu.cn )
+# Written by Wenrui Cai ( 844432667@qq.com )
 #
 
 drivers_dir       := drivers
 boot_dir          := boot
-user_dir          := user
 init_dir          := init
 lib_dir           := lib
-fs_dir            := fs
-mm_dir            := mm
 tools_dir         := tools
+test_dir          :=
 vmlinux_elf       := gxemul/vmlinux
-user_disk     := gxemul/fs.img
 
 link_script   := $(tools_dir)/scse0_3.lds
 
-modules           := boot drivers init lib mm user fs
+modules           := boot drivers init lib $(test_dir)
 objects           := $(boot_dir)/start.o                   \
                                  $(init_dir)/main.o        \
                                  $(init_dir)/init.o        \
-                                 $(init_dir)/code.o        \
                                  $(drivers_dir)/gxconsole/console.o \
-                                 $(lib_dir)/*.o            \
-                                 $(user_dir)/*.x \
-                                 $(fs_dir)/*.x \
-                                 $(mm_dir)/*.o
+                                 $(lib_dir)/*.o
+
+ifneq ($(test_dir),)
+objects :=$(objects) $(test_dir)/*.o
+endif
+
 
 .PHONY: all $(modules) clean
 
@@ -39,10 +37,10 @@ $(modules):
 	$(MAKE) --directory=$@
 
 clean:
-	for d in $(modules);    \
+		for d in $(modules);    \
                 do                                      \
                         $(MAKE) --directory=$$d clean; \
                 done; \
-        rm -rf *.o *~ $(vmlinux_elf)  $(user_disk)
+        rm -rf *.o *~ $(vmlinux_elf)
 
 include include.mk

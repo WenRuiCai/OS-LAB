@@ -55,3 +55,4 @@ _panic(const char *file, int line, const char *fmt,...)
 
         for(;;);
 }
+
